@@ -9,9 +9,11 @@ compiler:
     vcvarsall: amd64
 
 configure:
+    additional_parameters: -static -release
     nomake:
         - examples
         - tests
+        - tools
     skip:
         - qt3d
         - qtactiveqt
