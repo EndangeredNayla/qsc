@@ -21,6 +21,7 @@ import os
 import qsc
 import requests
 import shutil
+import datetime
 
 def source_url(release):
     base_release = release[:release.rfind('.')]
@@ -35,7 +36,8 @@ def download_release(release):
     url = source_url(release)
     download_path = os.path.join("archives", "qt-everywhere-src-{}.zip".format(release))
 
-    print("Downloading Qt {}...".format(release), end="", flush=True)
+    print("Downloading Qt {}...".format(release))
+    print(datetime.datetime.now())
     
     if not os.path.isdir("archives"):
         os.mkdir("archives")
@@ -47,4 +49,5 @@ def download_release(release):
     download_file(url, download_path)
             
     print("Done")
+    print(datetime.datetime.now())
 
