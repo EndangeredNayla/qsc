@@ -29,5 +29,5 @@ jobs:
       if: runner.os == 'Windows' || runner.os == 'macOS'
       uses: actions/upload-artifact@v1
       with:
-        name: openc2e-${{ github.sha }}-${{ runner.os }}.zip
-        path: openc2e-${{ github.sha }}-${{ runner.os }}
+        name: 5.15.0_dolphin.amd64.build.zip
+        path: 5.15.0_dolphin.amd64.build
