@@ -28,26 +28,33 @@ def source_url(release):
     return qsc.REPO_SRC_PATH.format(qsc.REPO_BASE_URL, base_release, release)
 
 def download_file(url, path):
-    with requests.get(url, stream=True) as request:
+    with requests.get(url, stream=True) as response:
+        response.raise_for_status()
+        processed = 0
+        total = int(response.headers['content-length'])
         with open(path, "wb") as file:
-            shutil.copyfileobj(request.raw, file)
+            for chunk in response.iter_content(chunk_size=shutil.COPY_BUFSIZE):
+                if not chunk:
+                    continue
+                file.write(chunk)
+                processed += len(chunk)
+                print("{}/{}".format(processed, total))
 
-def download_release(release):    
+def download_release(release):
     url = source_url(release)
-    download_path = os.path.join("archives", "qt-everywhere-src-{}.zip".format(release))
+    download_path = os.path.join("archives", "qtbase-everywhere-src-{}.zip".format(release))
 
     print("Downloading Qt {}...".format(release))
     print(datetime.datetime.now())
-    
+
     if not os.path.isdir("archives"):
         os.mkdir("archives")
-    
+
     if qsc.USE_CACHE and os.path.isfile(download_path):
         print("Cached")
         return
-    
+
     download_file(url, download_path)
-            
+
     print("Done")
     print(datetime.datetime.now())
-

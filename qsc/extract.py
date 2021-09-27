@@ -23,16 +23,16 @@ import zipfile
 import qsc
 
 def extract_release(release):
-    name = "qt-everywhere-src-{}".format(release)
+    name = "qtbase-everywhere-src-{}".format(release)
 
     zip_path = os.path.join("archives", name+".zip")
-    
+
     print("Extracting...", end="", flush=True)
-    
+
     if qsc.USE_CACHE and os.path.isdir(name):
         print("Cached")
         return
-    
+
     with zipfile.ZipFile(zip_path, "r") as zip:
         zip.extractall(".")
 

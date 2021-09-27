@@ -16,7 +16,7 @@ REM You should have received a copy of the GNU General Public License
 REM along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-IF "%USE_VS%"=="1" ( 
+IF "%USE_VS%"=="1" (
 	if "%VCVARSALL%"=="" (
 		call "%PROGRAMFILES(x86)%\Microsoft Visual Studio\%VS_VERSION%\%VS_EDITION%\Common7\Tools\VsDevCmd.bat"
 	) else (
@@ -26,7 +26,8 @@ IF "%USE_VS%"=="1" (
 
 
 :configure
-call ..\qt-everywhere-src-%RELEASE%\configure.bat ^
+call ..\qtbase-everywhere-src-%RELEASE%\configure.bat -list-features
+call ..\qtbase-everywhere-src-%RELEASE%\configure.bat ^
  -opensource -confirm-license ^
  -nomake examples -nomake tests ^
  %QT_CONFIGURE_OPTIONS% ^

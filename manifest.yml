@@ -9,59 +9,42 @@ compiler:
     vcvarsall: amd64
 
 configure:
-    additional_parameters: -static -release
+    additional_parameters: -static -release -static-runtime -no-opengl
     nomake:
         - examples
         - tests
         - tools
-    skip:
-        - qt3d
-        - qtactiveqt
-        - qtandroidextras
-        - qtcharts
-        - qtconnectivity
-        - qtdatavis3d
-        - qtdoc
-        - qtgamepad
-        - qtgraphicaleffects
-        - qtlocation
-        - qtlottie
-        - qtmacextras
-        - qtmultimedia
-        - qtnetworkauth
-        - qtpurchasing
-        - qtquick3d
-        - qtquickcontrols
-        - qtquicktimeline
-        - qtremoteobjects
-        - qtscript
-        - qtscxml
-        - qtsensors
-        - qtserialbus
-        - qtserialport
-        - qtspeech
-        - qtsvg
-        - qtwayland
-        - qtwebchannel
-        - qtwebengine
-        - qtwebsockets
-        - qtwebview
-        - qtx11extras
-        - qtxmlpatterns
     feature:
+        animation: false
         bearermanagement: false
+        big_codecs: false
+        calendarwidget: false
+        codecs: false
+        colordialog: false
+        commandlinkbutton: false
         concurrent: false
+        cssparser: false
+        cups: false
         dbus: false
-        imageformat_bmp: false
-        qml-devtools: false
-        qml-worker-script: false
-        quick-particles: false
-        quick-path: false
+        dnslookup: false
+        dtls: false
+        freetype: false
+        gssapi: false
+        http: false
+        iconv: false
+        imageformat_jpeg: false
+        imageformat_png: false
+        movie: false
+        ocsp: false
+        pdf: false
+        printdialog: false
+        printer: false
+        printpreviewdialog: false
+        printpreviewwidget: false
+        printer: false
         sql-odbc: false
         sql-sqlite: false
-        tiff: false
         vulkan: false
-        webp: false
 
 postprocess:
     delete:

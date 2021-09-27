@@ -21,16 +21,16 @@ import qsc
 
 def is_in_path(program):
     path_folders = os.getenv("PATH").split(os.pathsep)
-        
+
     if qsc.is_windows():
         program += ".exe"
-        
+
     for folder in path_folders:
         path = os.path.join(folder, program)
-        
+
         if os.path.isfile(path):
            return True
-           
+
     return False
 
 def is_jom_present():
@@ -38,24 +38,24 @@ def is_jom_present():
 
 def check_requirements():
     print("Requirements:\n")
-    
-    print("Perl - ", end="")
-    
+
+    # print("Perl - ", end="")
+
     success = True
-    
-    if not is_in_path("perl"):
-        print("Not found")
-        success = False
-    else:
-        print("Ok")
-        
+
+    # if not is_in_path("perl"):
+        # print("Not found")
+        # success = False
+    # else:
+        # print("Ok")
+
     print("Python (Optional) - ", end="")
-    
+
     if not is_in_path("python"):
         print("Found")
     else:
         print("Ok")
-    
+
     print("")
-    
+
     return success
