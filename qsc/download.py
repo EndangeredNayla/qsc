@@ -33,7 +33,7 @@ def download_file(url, path):
         processed = 0
         total = int(response.headers['content-length'])
         with open(path, "wb") as file:
-            for chunk in response.iter_content(chunk_size=shutil.COPY_BUFSIZE):
+            for chunk in response.iter_content(chunk_size=1024 * 1024 * 10):
                 if not chunk:
                     continue
                 file.write(chunk)
