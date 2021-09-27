@@ -7,6 +7,7 @@ on:
     branches: [ master ]
 
 env:
+  MAKEFLAGS: j2
   # set some variables for Visual Studio
   MultiProcessorCompilation: true
   UseMultiToolTask: true
