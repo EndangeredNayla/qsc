@@ -19,8 +19,16 @@ REM along with this program.  If not, see <http://www.gnu.org/licenses/>.
 IF "%USE_VS%"=="1" (
 	if "%VCVARSALL%"=="" (
 		call "%PROGRAMFILES(x86)%\Microsoft Visual Studio\%VS_VERSION%\%VS_EDITION%\Common7\Tools\VsDevCmd.bat"
+		IF NOT "%ERRORLEVEL%"=="0" (
+		     echo An error occured while running VsDevCmd! Exit code is %ERRORLEVEL%
+		     exit 1
+		)
 	) else (
 		call "%PROGRAMFILES(x86)%\Microsoft Visual Studio\%VS_VERSION%\%VS_EDITION%\VC\Auxiliary\Build\vcvarsall.bat" %VCVARSALL%
+		IF NOT "%ERRORLEVEL%"=="0" (
+		     echo An error occured while running vcvarsall! Exit code is %ERRORLEVEL%
+		     exit 1
+		)
 	)
 )
 
