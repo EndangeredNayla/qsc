@@ -30,9 +30,10 @@ jobs:
       run: python -m qsc manifest.yml
     - name: "List"
       run: ls
+    - name: "List"
+      run: ls dist
     - name: "Upload distribution artifact"
-      if: runner.os == 'Windows' || runner.os == 'macOS'
       uses: actions/upload-artifact@v1
       with:
-        name: 5.15.0_dolphin.amd64.build.zip
-        path: 5.15.0_dolphin.amd64.build
+        name: dist.zip
+        path: dist
