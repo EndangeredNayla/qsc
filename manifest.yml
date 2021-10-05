@@ -9,7 +9,7 @@ compiler:
     vcvarsall: amd64
 
 configure:
-    additional_parameters: -static -release -static-runtime -no-opengl
+    additional_parameters: -static -release -static-runtime -no-opengl -no-network -no-xml -no-sql
     nomake:
         - examples
         - tests
