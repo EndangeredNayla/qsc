@@ -17,44 +17,33 @@
 
 """All the download related stuff goes here"""
 
-import os
+from pathlib import Path
 import qsc
 import requests
 import shutil
-import datetime
 
 def source_url(release):
     base_release = release[:release.rfind('.')]
     return qsc.REPO_SRC_PATH.format(qsc.REPO_BASE_URL, base_release, release)
 
 def download_file(url, path):
-    with requests.get(url, stream=True) as response:
-        response.raise_for_status()
-        processed = 0
-        total = int(response.headers['content-length'])
+    with requests.get(url, stream=True) as request:
         with open(path, "wb") as file:
-            for chunk in response.iter_content(chunk_size=1024 * 1024 * 10):
-                if not chunk:
-                    continue
-                file.write(chunk)
-                processed += len(chunk)
-                print("{}/{}".format(processed, total))
+            shutil.copyfileobj(request.raw, file)
 
 def download_release(release):
     url = source_url(release)
-    download_path = os.path.join("archives", "qtbase-everywhere-src-{}.zip".format(release))
+    archive_dir = Path("archives")
+    download_path = archive_dir / f"qt-everywhere-src-{release}.tar.xz"
 
-    print("Downloading Qt {}...".format(release))
-    print(datetime.datetime.now())
+    print(f"Downloading Qt {release}...", end="", flush=True)
 
-    if not os.path.isdir("archives"):
-        os.mkdir("archives")
+    archive_dir.mkdir(exist_ok=True)
 
-    if qsc.USE_CACHE and os.path.isfile(download_path):
+    if qsc.USE_CACHE and download_path.is_file():
         print("Cached")
         return
 
     download_file(url, download_path)
 
     print("Done")
-    print(datetime.datetime.now())
