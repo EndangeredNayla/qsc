@@ -33,21 +33,18 @@ def is_in_path(program):
 
     return False
 
-def is_jom_present():
-    return is_in_path("jom")
-
 def check_requirements():
     print("Requirements:\n")
 
-    # print("Perl - ", end="")
+    print("Perl - ", end="")
 
     success = True
 
-    # if not is_in_path("perl"):
-        # print("Not found")
-        # success = False
-    # else:
-        # print("Ok")
+    if not is_in_path("perl"):
+        print("Not found")
+        success = False
+    else:
+        print("Ok")
 
     print("Python (Optional) - ", end="")
 

@@ -19,60 +19,32 @@
 
 import argparse
 import os
-import zipfile
+from pathlib import Path
 
-import sys
-import subprocess
 import yaml
 
 import qsc
 from qsc.download import download_release, download_file
 from qsc.extract import extract_release
 from qsc.postprocess import postprocess_dir
-from qsc.requirements import check_requirements, is_jom_present
-from qsc.visualstudio import setup_visual_studio
-
+from qsc.requirements import check_requirements
 
 def parse_args():
     parser = argparse.ArgumentParser(description="QSC builds your own custom Qt")
     parser.add_argument("--cache", dest="use_cache", action="store_true")
     parser.add_argument("--no-cache", dest="use_cache", action="store_false")
-    parser.add_argument("--jom", dest="use_jom", action="store_true")
-    parser.add_argument("--no-jom", dest="use_jom", action="store_false")
     parser.add_argument("--continue", dest="do_continue", action="store_true")
     parser.add_argument("--mirror", dest="mirror", default="https://download.qt.io/")
     parser.add_argument("manifest")
 
-    parser.set_defaults(use_cache=True, use_jom=True, do_continue=False)
+    parser.set_defaults(use_cache=True, do_continue=False)
 
     args = parser.parse_args()
 
     qsc.USE_CACHE = args.use_cache
-    qsc.USE_JOM = args.use_jom
     qsc.REPO_BASE_URL = args.mirror
 
     return args
-
-def install_jom():
-    if os.path.isfile(os.path.join("jom", "jom.exe")):
-        return
-
-    if not os.path.isdir("jom"):
-        os.mkdir("jom")
-
-    os.chdir("jom")
-
-    url = qsc.REPO_JOM_PATH.format(qsc.REPO_BASE_URL)
-
-    download_path = "jom.zip"
-
-    download_file(url, download_path)
-
-    with zipfile.ZipFile(download_path, "r") as f:
-        f.extract("jom.exe")
-
-    os.remove("jom.zip")
-    os.chdir("..")
 
 if __name__ == "__main__":
     args = parse_args()
@@ -94,12 +66,6 @@ if __name__ == "__main__":
     download_release(release)
     extract_release(release)
 
-    if qsc.USE_JOM and qsc.is_windows():
-        if not is_jom_present():
-            print("Jom not present, using own...")
-            install_jom()
-            os.environ['PATH'] += os.pathsep + os.path.join(os.getcwd(), 'jom')
-
     if os.path.isdir(build_dir):
         if not args.do_continue:
             print("Build directory already exists - aborting (specify --continue to ignore)")
@@ -113,11 +79,11 @@ if __name__ == "__main__":
         if not qsc.is_windows():
             print("Only supported on Windows!")
             exit(1)
-        #
-        # os.putenv("VS_VERSION", compiler["version"])
-        # os.putenv("VS_EDITION", compiler["edition"])
-        # os.putenv("VCVARSALL", compiler.get("vcvarsall", ""))
-        # os.putenv("USE_VS", "1")
+
+        os.putenv("VS_VERSION", compiler["version"])
+        os.putenv("VS_EDITION", compiler["edition"])
+        os.putenv("VCVARSALL", compiler.get("vcvarsall", ""))
+        os.putenv("USE_VS", "1")
     else:
         print("Unknown compiler '{}'".format(compiler.name))
         exit(1)
@@ -125,26 +91,24 @@ if __name__ == "__main__":
     output_path = os.path.join(basedir, "dist", config["name"]+"_"+release)
     os.makedirs(output_path, exist_ok=True)
 
-    platform = ""
+    os.putenv("RELEASE", release)
+    os.putenv("OUTNAME", output_path)
 
     # Platform
-    if config.get("cross", False) == "true":
-        hostbindir = os.path.abspath(config["hostbindir"])
-        platform = "-xplatform "+config["platform"]+ " -external-hostbindir "+hostbindir
-    elif config.get("platform", False):
-        platform = "-platform "+config["platform"]
+    platform = config.get("platform")
+    if platform is not None:
+        os.putenv("QT_PLATFORM", "-platform "+platform)
 
-    use_jom = qsc.USE_JOM and compiler["name"] == "visual_studio"
+    host_path = config.get("host_path")
+    if host_path is not None:
+        host_path = "-qt-host-path " + str(Path(host_path).resolve())
+        os.putenv("QT_HOST_PATH", host_path)
 
     # Config options
+
     configure = config["configure"]
 
     configure_options = ""
-    configure_options += "-opensource -confirm-license"
-
-    # Use mp if we're not using jom
-    if not args.use_jom and compiler["name"] == "visual_studio":
-        configure_options += " -mp"
 
     if configure:
         # -nomake
@@ -167,17 +131,10 @@ if __name__ == "__main__":
         if configure.get("additional_parameters", False):
             configure_options += " "+configure["additional_parameters"]
 
-    configure_options += f" -prefix {output_path} {platform}"
+    os.putenv("QT_CONFIGURE_OPTIONS", configure_options)
 
     if qsc.is_windows():
-        setup_visual_studio()
-        print("Configuring...")
-        subprocess.run(f"..\qtbase-everywhere-src-{release}\configure.bat {configure_options}", check=True)
-        build_tool = "jom" if use_jom else "nmake"
-        print("Compiling...")
-        subprocess.run(build_tool, check=True)
-        print("Installing...")
-        subprocess.run(f"{build_tool} install", check=True)
+        os.system(qsc.WINBUILD_PATH)
     else:
         print("Not supported yet, sorry :/")
         exit(1)
