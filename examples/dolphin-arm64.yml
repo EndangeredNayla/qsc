@@ -1,5 +1,5 @@
-release: 6.5.1
-host_path: ..\dist\dolphin.x64_6.5.1
+release: 6.7.0
+host_path: ..\dist\dolphin.x64_6.7.0
 platform: win32-arm64-msvc
 name: dolphin.arm64
 
